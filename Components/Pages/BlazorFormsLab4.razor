@@ -1,0 +1,126 @@
+﻿@page "/lab4"
+
+<div class="col-12 offset-md-2 col-md-8 border">
+    <div class="text-center pt-4">
+        <h2 class="text-success">Lab4 - Multiple Forms</h2>
+        <hr />
+    </div>
+
+    <div class="mx-2 px-2">
+        <EditForm FormName="ProductCreate" Model="Product" OnValidSubmit="HandleProductCreate">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group py-2">
+                Product Name
+                <InputText class="form-control" @bind-Value="Product.Name" />
+                <ValidationMessage For="@(() => Product.Name)" />
+            </div>
+
+            <div class="form-group py-2">
+                Price
+                <InputNumber class="form-control" @bind-Value="Product.Price" />
+                <ValidationMessage For="@(() => Product.Price)" />
+            </div>
+
+            <div class="form-group py-2">
+                Category
+                <InputSelect class="form-control" @bind-Value="Product.Category">
+                    @foreach (var c in Enum.GetValues<Category>())
+                    {
+                        <option value="@c">@c</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="form-group py-2">
+                IsActive
+                <InputCheckbox @bind-Value="Product.IsActive" />
+            </div>
+
+            <div class="form-group py-2">
+                Available After
+                <InputDate class="form-control" @bind-Value="Product.AvailableAfter" />
+            </div>
+
+            <button class="btn btn-primary my-3" style="width:200px" type="submit" disabled="@IsProcessing">
+                Create Product (Main)
+            </button>
+        </EditForm>
+
+        <hr />
+
+        <EditForm FormName="ProductCreateTemp" Model="ProductTemp" OnValidSubmit="HandleProductCreateTemp">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group py-2">
+                Temp Name
+                <InputText class="form-control" @bind-Value="ProductTemp.Name" />
+                <ValidationMessage For="@(() => ProductTemp.Name)" />
+            </div>
+
+            <div class="form-group py-2">
+                Temp Price
+                <InputNumber class="form-control" @bind-Value="ProductTemp.Price" />
+                <ValidationMessage For="@(() => ProductTemp.Price)" />
+            </div>
+
+            <button class="btn btn-secondary my-3" style="width:200px" type="submit" disabled="@IsProcessing">
+                Create Product (Temp)
+            </button>
+
+            <p class="text-success">@(IsProcessing ? "Processing..." : "")</p>
+        </EditForm>
+    </div>
+
+    @if (CreatedProduct is not null)
+    {
+        <hr />
+        <h2 class="text-success">Product Created</h2>
+        <div class="px-4">
+            Name: @CreatedProduct.Name <br />
+            Price: @CreatedProduct.Price <br />
+            Category: @CreatedProduct.Category <br />
+            IsActive: @(CreatedProduct.IsActive ? "Yes" : "No") <br />
+            Available After: @CreatedProduct.AvailableAfter.ToShortDateString() <br />
+        </div>
+    }
+</div>
+
+@code {
+    [SupplyParameterFromForm(FormName = "ProductCreate")]
+    public Product Product { get; set; } = new();
+
+    [SupplyParameterFromForm(FormName = "ProductCreateTemp")]
+    public Product ProductTemp { get; set; } = new();
+
+    private Product? CreatedProduct { get; set; }
+    private bool IsProcessing;
+
+    private async Task HandleProductCreate()
+    {
+        IsProcessing = true;
+        CreatedProduct = null;
+
+        await Task.Delay(1500);
+
+        CreatedProduct = Product;
+        Product = new();
+
+        IsProcessing = false;
+    }
+
+    private async Task HandleProductCreateTemp()
+    {
+        IsProcessing = true;
+        CreatedProduct = null;
+
+        await Task.Delay(1500);
+
+        CreatedProduct = ProductTemp;
+        ProductTemp = new();
+
+        IsProcessing = false;
+    }
+}
