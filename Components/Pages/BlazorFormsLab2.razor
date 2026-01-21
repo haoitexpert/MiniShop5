@@ -1,0 +1,51 @@
+﻿@page "/lab2"
+
+<div class="col-12 offset-md-2 col-md-8 border">
+    <div class="text-center pt-4">
+        <h2 class="text-success">Lab2 - Validation</h2>
+        <hr />
+    </div>
+
+    <div class="mx-2 px-2">
+        <EditForm Model="Product">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group py-2">
+                Product Name
+                <InputText class="form-control" @bind-Value="Product.Name" />
+                <ValidationMessage For="@(() => Product.Name)" />
+            </div>
+
+            <div class="form-group py-2">
+                Price
+                <InputNumber class="form-control" @bind-Value="Product.Price" />
+                <ValidationMessage For="@(() => Product.Price)" />
+            </div>
+
+            <div class="form-group py-2">
+                Category
+                <InputSelect class="form-control" @bind-Value="Product.Category">
+                    @foreach (var c in Enum.GetValues<Category>())
+                    {
+                        <option value="@c">@c</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="form-group py-2">
+                IsActive
+                <InputCheckbox @bind-Value="Product.IsActive" />
+            </div>
+
+            <div class="form-group py-2">
+                Available After
+                <InputDate class="form-control" @bind-Value="Product.AvailableAfter" />
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private Product Product { get; set; } = new();
+}
