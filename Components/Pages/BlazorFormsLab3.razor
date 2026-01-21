@@ -1,0 +1,84 @@
+﻿@page "/lab3"
+
+<div class="col-12 offset-md-2 col-md-8 border">
+    <div class="text-center pt-4">
+        <h2 class="text-success">Lab3 - Submit</h2>
+        <hr />
+    </div>
+
+    <div class="mx-2 px-2">
+        <EditForm Model="Product" OnValidSubmit="HandleCreate">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group py-2">
+                Product Name
+                <InputText class="form-control" @bind-Value="Product.Name" />
+                <ValidationMessage For="@(() => Product.Name)" />
+            </div>
+
+            <div class="form-group py-2">
+                Price
+                <InputNumber class="form-control" @bind-Value="Product.Price" />
+                <ValidationMessage For="@(() => Product.Price)" />
+            </div>
+
+            <div class="form-group py-2">
+                Category
+                <InputSelect class="form-control" @bind-Value="Product.Category">
+                    @foreach (var c in Enum.GetValues<Category>())
+                    {
+                        <option value="@c">@c</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="form-group py-2">
+                IsActive
+                <InputCheckbox @bind-Value="Product.IsActive" />
+            </div>
+
+            <div class="form-group py-2">
+                Available After
+                <InputDate class="form-control" @bind-Value="Product.AvailableAfter" />
+            </div>
+
+            <button class="btn btn-primary my-3" style="width:200px" type="submit" disabled="@IsProcessing">
+                Create Product
+            </button>
+            <p class="text-success">@(IsProcessing ? "Processing..." : "")</p>
+        </EditForm>
+    </div>
+
+    @if (CreatedProduct is not null)
+    {
+        <hr />
+        <h2 class="text-success">Product Created</h2>
+        <div class="px-4">
+            Name: @CreatedProduct.Name <br />
+            Price: @CreatedProduct.Price <br />
+            Category: @CreatedProduct.Category <br />
+            IsActive: @(CreatedProduct.IsActive ? "Yes" : "No") <br />
+            Available After: @CreatedProduct.AvailableAfter.ToShortDateString() <br />
+        </div>
+    }
+</div>
+
+@code {
+    private Product Product { get; set; } = new();
+    private Product? CreatedProduct { get; set; }
+    private bool IsProcessing;
+
+    private async Task HandleCreate()
+    {
+        IsProcessing = true;
+        CreatedProduct = null;
+
+        await Task.Delay(1500);
+
+        CreatedProduct = Product;
+        Product = new();
+
+        IsProcessing = false;
+    }
+}
